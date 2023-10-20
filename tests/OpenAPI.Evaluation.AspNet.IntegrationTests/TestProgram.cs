@@ -5,7 +5,7 @@ using OpenAPI.Evaluation.AspNet.IntegrationTests.TestApp;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
-app.UseOpenApiRequestEvaluation();
+app.UseOpenApiEvaluation();
 app.UseMiddleware<TestRequestHandler>();
 
 app.Run();
