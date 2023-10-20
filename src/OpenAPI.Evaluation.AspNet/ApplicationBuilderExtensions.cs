@@ -10,6 +10,6 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="builder">Application builder</param>
     /// <returns>Current application builder</returns>
-    public static IApplicationBuilder UseOpenApiRequestEvaluation(this IApplicationBuilder builder) => 
+    public static IApplicationBuilder UseOpenApiEvaluation(this IApplicationBuilder builder) => 
         builder.UseMiddleware<OpenApiEvaluationMiddleware>();
 }

@@ -19,6 +19,7 @@ public abstract class TestSpecification : WebApplicationFactory<TestProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseContentRoot(Directory.GetCurrentDirectory());
         builder.ConfigureServices(collection =>
         {
             collection
