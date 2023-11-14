@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Evaluation.OpenAPI" Version="0.1.4" />
+	  <PackageReference Include="Evaluation.OpenAPI" Version="[0.2.1,1.0)" />
 	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -13,12 +13,29 @@ internal sealed class TestRequestHandler
     }
 
     [UsedImplicitly]
-    public Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
+        var requestCancellation = context.RequestAborted;
+        
+        context.Request.Body.Position = 0;
+        var buffer = new byte[1];
+        var requestBodyLengthRead = await context.Request.Body.ReadAsync(buffer, requestCancellation)
+            .ConfigureAwait(false);
+        if (context.Request.Body.Length > 0 && 
+            requestBodyLengthRead == 0)
+        {
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsJsonAsync("""
+                "Expected request content"
+                """, cancellationToken: requestCancellation);
+            return;
+        }
+
         if (!_responses.TryGetValue(context.Request.Method, out var response))
         {
-            return context.Response.WriteAsync(
-                $"Method '{context.Request.Method}' not registered");
+            await context.Response.WriteAsync(
+                $"Method '{context.Request.Method}' not registered", cancellationToken: requestCancellation);
+            return;
         }
 
         IHeaderDictionary headers = new HeaderDictionary();
@@ -30,9 +47,10 @@ internal sealed class TestRequestHandler
             {
                 context.Response.Headers.Add(header);
             }
-            return context.Response.WriteAsJsonAsync(response);
+            await context.Response.WriteAsJsonAsync(response, cancellationToken: requestCancellation);
+            return;
         }
         context.Response.StatusCode = 500;
-        return context.Response.WriteAsJsonAsync(responseEvaluation);
+        await context.Response.WriteAsJsonAsync(responseEvaluation, cancellationToken: requestCancellation);
     }
 }

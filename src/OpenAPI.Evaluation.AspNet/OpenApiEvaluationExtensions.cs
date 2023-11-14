@@ -1,7 +1,8 @@
 using System.Collections.Immutable;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using Json.More;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace OpenAPI.Evaluation.AspNet;
 
@@ -10,6 +11,7 @@ public static class OpenApiEvaluationExtensions
     public static OpenApiEvaluationResults EvaluateRequest(this Specification.OpenAPI openApiSpecification,
         HttpRequest request)
     {
+        request.EnableBuffering();
         var requestUri = request.GetRequestUri();
         var method = request.Method;
         var body = request.Body.Read();
@@ -20,6 +22,7 @@ public static class OpenApiEvaluationExtensions
     public static async Task<OpenApiEvaluationResults> EvaluateRequestAsync(this Specification.OpenAPI openApiSpecification,
         HttpRequest request, CancellationToken cancellationToken = default)
     {
+        request.EnableBuffering();
         var requestUri = request.GetRequestUri();
         var method = request.Method;
         var body = await request.Body.ReadAsync(cancellationToken)
@@ -113,9 +116,11 @@ public static class OpenApiEvaluationExtensions
         {
             return null;
         }
+        
         contentStream.Position = 0;
-        var content = JsonNode.Parse(contentStream);
+        var content = await JsonDocument.ParseAsync(contentStream, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
         contentStream.Position = 0;
-        return content;
+        return content.RootElement.AsNode();
     }
 }
