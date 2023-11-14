@@ -23,7 +23,7 @@ public class OpenApi_Middleware_Tests : TestSpecification
                 "last-name": "Bar"
             }
             """));
-        using var client = CreateDefaultClient();
+        using var client = CreateResponseValidatingClient();
         var result = await client.GetAsync("http://localhost/v1/user/1")
             .ConfigureAwait(false);
         var content = await result.Content.ReadFromJsonAsync<JsonNode>()
@@ -42,7 +42,7 @@ public class OpenApi_Middleware_Tests : TestSpecification
         Responses.Add("POST", JsonNode.Parse("""
             "123"
             """));
-        using var client = CreateDefaultClient();
+        using var client = CreateResponseValidatingClient();
         var result = await client.PostAsync("http://localhost/v2/user", new StringContent("""
             {
                 "first-name": "Foo",
